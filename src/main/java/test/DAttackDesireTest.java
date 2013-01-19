@@ -49,7 +49,7 @@ public class DAttackDesireTest implements Listener {
         // EntityHuman.class, 8), 7);
         // mind.addMovementDesire(new DesireLookRandomly(attackEntity), 7);
         DesireFindTarget targetFinderDesire = new DesireFindTarget(
-                attackEntity, 3, false, false);
+                attackEntity, 30, false, false);
         mind.addActionDesire(targetFinderDesire, 1);
         mind.addActionDesire(new DesireMoveToTarget(attackEntity, 0.0f), 2);
         // mind.addActionDesire(new DesireAttackNearest(attackEntity,

@@ -1,9 +1,6 @@
 package de.kumpelblase2.remoteentities.api.thinking.goals;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
-
-import sun.security.action.GetLongAction;
 import net.minecraft.server.v1_4_R1.EntityLiving;
 import net.minecraft.server.v1_4_R1.Vec3D;
 import de.kumpelblase2.remoteentities.api.RemoteEntity;
@@ -18,7 +15,6 @@ public class DesireMoveToTarget extends DesireBase
 	protected double m_x;
 	protected double m_y;
 	protected double m_z;
-	private long lastUpdate;
 	
 	public DesireMoveToTarget(RemoteEntity inEntity, float inMinDistance)
 	{
@@ -31,9 +27,6 @@ public class DesireMoveToTarget extends DesireBase
 	@Override
 	public boolean shouldExecute()
 	{
-	        if(true) {
-	            return true;
-	        }
 		if(this.getEntityHandle() == null)
 			return false;
 		
@@ -61,8 +54,7 @@ public class DesireMoveToTarget extends DesireBase
 	@Override
 	public boolean canContinue()
 	{
-	        return true;
-//		return !this.getEntityHandle().getNavigation().f() && this.m_target.isAlive() && this.m_target.e(this.getEntityHandle()) < this.m_minDistanceSquared;
+		return !this.getEntityHandle().getNavigation().f() && this.m_target.isAlive() && this.m_target.e(this.getEntityHandle()) < this.m_minDistanceSquared;
 	}
 	
 	@Override
@@ -74,16 +66,6 @@ public class DesireMoveToTarget extends DesireBase
 	@Override
 	public void startExecuting()
 	{
-	        System.out.println("move");
-	        lastUpdate = System.currentTimeMillis();
-//		this.getRemoteEntity().move(Bukkit.getOnlinePlayers()[0].getLocation());
-	        this.getRemoteEntity().move(new Location(this.getRemoteEntity().getBukkitEntity().getWorld(), this.m_x, this.m_y, this.m_z));
-	}
-	
-	public boolean update() {
-	    if(System.currentTimeMillis() - lastUpdate > 30000) {
-	        startExecuting();
-	    }
-	    return true;
+		this.getRemoteEntity().move(new Location(this.getRemoteEntity().getBukkitEntity().getWorld(), this.m_x, this.m_y, this.m_z));
 	}
 }
