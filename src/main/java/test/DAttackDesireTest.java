@@ -1,6 +1,7 @@
 package test;
 
 import net.minecraft.server.v1_4_R1.EntityHuman;
+import net.minecraft.server.v1_4_R1.EntityLiving;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -59,6 +60,8 @@ public class DAttackDesireTest implements Listener {
                     public void run() {
                         mind.addActionDesire(new DAttackEntity(attackEntity,
                                 Bukkit.getOnlinePlayers()[0]), 0);
+                        mind.addActionDesire(new DesireFindTarget(attackEntity, 0, false, false), 1);
+                        mind.addActionDesire(new DesireAttackOnCollide(attackEntity, EntityLiving.class, true),2);
                         System.out.println("add mind");
                        
                     }
