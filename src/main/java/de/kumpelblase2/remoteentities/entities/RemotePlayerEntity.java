@@ -217,50 +217,8 @@ public class RemotePlayerEntity extends EntityPlayer implements RemoteEntityHand
 		this.m_target = inEntity;
 	}
 	
-	// usage?
-	public int c2(Entity entity) {
-	        return 2;
-	    }
-	
 	public boolean m(Entity entity) {
-	        // for enchant? or use method ab() or aW() from EntityHuman?
-	        int i = this.c2(entity);
-
-	        if (this.hasEffect(MobEffectList.INCREASE_DAMAGE)) {
-	            i += 3 << this.getEffect(MobEffectList.INCREASE_DAMAGE).getAmplifier();
-	        }
-
-	        if (this.hasEffect(MobEffectList.WEAKNESS)) {
-	            i -= 2 << this.getEffect(MobEffectList.WEAKNESS).getAmplifier();
-	        }
-
-	        int j = 0;
-
-	        if (entity instanceof EntityLiving) {
-	            i += EnchantmentManager.a((EntityLiving) this, (EntityLiving) entity);
-	            j += EnchantmentManager.getKnockbackEnchantmentLevel(this, (EntityLiving) entity);
-	        }
-
-	        boolean flag = entity.damageEntity(DamageSource.mobAttack(this), i);
-
-	        if (flag) {
-	            if (j > 0) {
-	                entity.g((double) (-MathHelper.sin(this.yaw * 3.1415927F / 180.0F) * (float) j * 0.5F), 0.1D, (double) (MathHelper.cos(this.yaw * 3.1415927F / 180.0F) * (float) j * 0.5F));
-	                this.motX *= 0.6D;
-	                this.motZ *= 0.6D;
-	            }
-
-	            int k = EnchantmentManager.getFireAspectEnchantmentLevel(this);
-
-	            if (k > 0) {
-	                entity.setOnFire(k * 4);
-	            }
-
-	            if (entity instanceof EntityLiving) {
-	                EnchantmentThorns.a(this, (EntityLiving) entity, this.random);
-	            }
-	        }
-
-	        return flag;
-	    }
+	    attack(entity);
+	    return true;
+	}
 }
