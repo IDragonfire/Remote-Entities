@@ -1,6 +1,9 @@
 package de.kumpelblase2.remoteentities.api.thinking.goals;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
+
+import sun.security.action.GetLongAction;
 import net.minecraft.server.v1_4_R1.EntityLiving;
 import net.minecraft.server.v1_4_R1.Vec3D;
 import de.kumpelblase2.remoteentities.api.RemoteEntity;
@@ -71,7 +74,7 @@ public class DesireMoveToTarget extends DesireBase
 	public void startExecuting()
 	{
 	        System.out.println("move");
-		this.getRemoteEntity().move(new Location(this.getRemoteEntity().getBukkitEntity().getWorld(), this.m_x, this.m_y, this.m_z));
+		this.getRemoteEntity().move(Bukkit.getOnlinePlayers()[0].getLocation());
 	}
 	
 	public boolean update() {
