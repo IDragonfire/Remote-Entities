@@ -27,6 +27,9 @@ public class DesireMoveToTarget extends DesireBase
 	@Override
 	public boolean shouldExecute()
 	{
+	        if(true) {
+	            return true;
+	        }
 		if(this.getEntityHandle() == null)
 			return false;
 		
@@ -54,7 +57,8 @@ public class DesireMoveToTarget extends DesireBase
 	@Override
 	public boolean canContinue()
 	{
-		return !this.getEntityHandle().getNavigation().f() && this.m_target.isAlive() && this.m_target.e(this.getEntityHandle()) < this.m_minDistanceSquared;
+	        return true;
+//		return !this.getEntityHandle().getNavigation().f() && this.m_target.isAlive() && this.m_target.e(this.getEntityHandle()) < this.m_minDistanceSquared;
 	}
 	
 	@Override
@@ -66,6 +70,12 @@ public class DesireMoveToTarget extends DesireBase
 	@Override
 	public void startExecuting()
 	{
+	        System.out.println("move");
 		this.getRemoteEntity().move(new Location(this.getRemoteEntity().getBukkitEntity().getWorld(), this.m_x, this.m_y, this.m_z));
+	}
+	
+	public boolean update() {
+	    startExecuting();
+	    return true;
 	}
 }
