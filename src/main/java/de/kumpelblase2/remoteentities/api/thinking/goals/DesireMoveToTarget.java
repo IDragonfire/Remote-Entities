@@ -76,7 +76,8 @@ public class DesireMoveToTarget extends DesireBase
 	{
 	        System.out.println("move");
 	        lastUpdate = System.currentTimeMillis();
-		this.getRemoteEntity().move(Bukkit.getOnlinePlayers()[0].getLocation());
+//		this.getRemoteEntity().move(Bukkit.getOnlinePlayers()[0].getLocation());
+	        this.getRemoteEntity().move(new Location(this.getRemoteEntity().getBukkitEntity().getWorld(), this.m_x, this.m_y, this.m_z));
 	}
 	
 	public boolean update() {

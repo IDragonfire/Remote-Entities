@@ -45,11 +45,12 @@ public class DAttackDesireTest implements Listener {
         // mind.addMovementDesire(new DesireMoveTowardsRestriction(attackEntity),
         // 4);
         // mind.addMovementDesire(new DesireWanderAround(attackEntity), 6);
-//        mind.addMovementDesire(new DesireLookAtNearest(attackEntity,
-//                EntityHuman.class, 8), 7);
+        // mind.addMovementDesire(new DesireLookAtNearest(attackEntity,
+        // EntityHuman.class, 8), 7);
         // mind.addMovementDesire(new DesireLookRandomly(attackEntity), 7);
-        mind.addActionDesire(new DesireAttackTarget(attackEntity, 3, false,
-                false), 1);
+        DesireFindTarget targetFinderDesire = new DesireFindTarget(
+                attackEntity, 3, false, false);
+        mind.addActionDesire(targetFinderDesire, 1);
         mind.addActionDesire(new DesireMoveToTarget(attackEntity, 0.0f), 2);
         // mind.addActionDesire(new DesireAttackNearest(attackEntity,
         // EntityHuman.class, 16, false, true, 0), 2);
@@ -58,11 +59,10 @@ public class DAttackDesireTest implements Listener {
         // em.createNamedEntity(RemoteEntityType.Human, loc, "test", false);
         Bukkit.broadcastMessage("npc spawn");
     }
-    
+
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         this.em.despawnAll();
     }
-    
 
 }
