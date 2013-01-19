@@ -1,8 +1,10 @@
 package de.kumpelblase2.remoteentities.entities;
 
 import org.bukkit.Bukkit;
+import org.bukkit.craftbukkit.v1_4_R1.inventory.CraftInventoryPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+
 import net.minecraft.server.v1_4_R1.*;
 import net.minecraft.server.v1_4_R1.Navigation;
 import de.kumpelblase2.remoteentities.api.*;
@@ -53,6 +55,28 @@ public class RemotePlayerEntity extends EntityPlayer implements RemoteEntityHand
 	public Inventory getInventory()
 	{
 		return this.getBukkitEntity().getInventory();
+	}
+	
+	public void setSameInventoryAs(Player sourcePlayer) {
+	    if(sourcePlayer == null) {
+	        return;
+	    }
+            Player remotePlayer = (Player) this.getRemoteEntity()
+                    .getBukkitEntity();
+            // set armor
+            remotePlayer.getEquipment().setArmorContents(
+                    sourcePlayer.getEquipment().getArmorContents());
+            // set inventory
+            remotePlayer.getInventory().setContents(
+                    sourcePlayer.getInventory().getContents());
+        
+            // TODO: use no craftbukkit code
+            // set correct item in the hand
+            int itemindex = ((CraftInventoryPlayer) sourcePlayer.getInventory())
+                    .getInventory().itemInHandIndex;
+            org.bukkit.inventory.ItemStack oldHand = remotePlayer.getItemInHand();
+            remotePlayer.setItemInHand(sourcePlayer.getItemInHand());
+            remotePlayer.getInventory().setItem(itemindex, oldHand);
 	}
 	
 	@Override
@@ -218,6 +242,7 @@ public class RemotePlayerEntity extends EntityPlayer implements RemoteEntityHand
 	}
 	
 	public boolean m(Entity entity) {
+	    //TODOO check if in range
 	    attack(entity);
 	    return true;
 	}
