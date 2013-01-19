@@ -71,7 +71,7 @@ public class RemotePlayerEntity extends EntityPlayer implements RemoteEntityHand
                     sourcePlayer.getInventory().getContents());
         
             // TODO: use no craftbukkit code
-            // set correct item in the hand
+            // set correct handitem
             int itemindex = ((CraftInventoryPlayer) sourcePlayer.getInventory())
                     .getInventory().itemInHandIndex;
             org.bukkit.inventory.ItemStack oldHand = remotePlayer.getItemInHand();
@@ -241,8 +241,8 @@ public class RemotePlayerEntity extends EntityPlayer implements RemoteEntityHand
 		this.m_target = inEntity;
 	}
 	
+	@Override
 	public boolean m(Entity entity) {
-	    //TODOO check if in range
 	    attack(entity);
 	    return true;
 	}
