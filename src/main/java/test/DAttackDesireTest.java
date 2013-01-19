@@ -6,6 +6,8 @@ import net.minecraft.server.v1_4_R1.EntityLiving;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.enchantments.EnchantmentWrapper;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -35,7 +37,10 @@ public class DAttackDesireTest implements Listener {
         final RemotePlayer attackEntity = (RemotePlayer) em.createNamedEntity(
                 RemoteEntityType.Human, loc, "attack", false);
         Player p = (Player) attackEntity.getBukkitEntity();
-        p.setItemInHand(new ItemStack(Material.IRON_SWORD));
+        Enchantment myEnchantment = new EnchantmentWrapper(20);
+        ItemStack i = new ItemStack(Material.IRON_SWORD);
+        i.addEnchantment(myEnchantment, new Integer(2));
+        p.setItemInHand(i);
 
         final Mind mind = attackEntity.getMind();
         // mind.addMovementDesire(new DesireSwim(attackEntity), 0);
