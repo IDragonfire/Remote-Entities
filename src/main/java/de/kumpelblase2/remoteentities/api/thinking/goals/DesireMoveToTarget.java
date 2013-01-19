@@ -18,6 +18,7 @@ public class DesireMoveToTarget extends DesireBase
 	protected double m_x;
 	protected double m_y;
 	protected double m_z;
+	private long lastUpdate;
 	
 	public DesireMoveToTarget(RemoteEntity inEntity, float inMinDistance)
 	{
@@ -74,11 +75,14 @@ public class DesireMoveToTarget extends DesireBase
 	public void startExecuting()
 	{
 	        System.out.println("move");
+	        lastUpdate = System.currentTimeMillis();
 		this.getRemoteEntity().move(Bukkit.getOnlinePlayers()[0].getLocation());
 	}
 	
 	public boolean update() {
-	    startExecuting();
+	    if(System.currentTimeMillis() - lastUpdate > 30000) {
+	        startExecuting();
+	    }
 	    return true;
 	}
 }
