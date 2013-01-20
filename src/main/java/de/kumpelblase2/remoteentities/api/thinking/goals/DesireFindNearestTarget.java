@@ -3,10 +3,14 @@ package de.kumpelblase2.remoteentities.api.thinking.goals;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+
+import org.bukkit.entity.EntityType;
+
 import net.minecraft.server.v1_4_R1.DistanceComparator;
 import net.minecraft.server.v1_4_R1.EntityHuman;
 import net.minecraft.server.v1_4_R1.EntityLiving;
 import de.kumpelblase2.remoteentities.api.RemoteEntity;
+import de.kumpelblase2.remoteentities.utilities.EntityTypeToLivingEntityClass;
 
 public class DesireFindNearestTarget extends DesireTargetBase
 {
@@ -15,6 +19,12 @@ public class DesireFindNearestTarget extends DesireTargetBase
 	protected DistanceComparator m_comparator;
 	protected EntityLiving m_target;
 	protected boolean m_onlyAtNight;
+	
+	
+	public DesireFindNearestTarget(RemoteEntity inEntity, EntityType inTargetBukkitType, float inDistance, boolean inShouldCheckSight, int inChance)
+        {
+                this(inEntity, EntityTypeToLivingEntityClass.map(inTargetBukkitType), inDistance, inShouldCheckSight, false, inChance);
+        }       
 	
 	public DesireFindNearestTarget(RemoteEntity inEntity, Class<? extends EntityLiving> inTargetClass, float inDistance, boolean inShouldCheckSight, int inChance)
 	{

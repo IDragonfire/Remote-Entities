@@ -1,10 +1,13 @@
 package de.kumpelblase2.remoteentities.api.thinking.goals;
 
+import org.bukkit.entity.EntityType;
+
 import net.minecraft.server.v1_4_R1.EntityIronGolem;
 import net.minecraft.server.v1_4_R1.EntityLiving;
 import net.minecraft.server.v1_4_R1.EntityVillager;
 import de.kumpelblase2.remoteentities.api.RemoteEntity;
 import de.kumpelblase2.remoteentities.api.thinking.DesireBase;
+import de.kumpelblase2.remoteentities.utilities.EntityTypeToLivingEntityClass;
 
 public class DesireOfferFlower extends DesireBase
 {
@@ -18,6 +21,11 @@ public class DesireOfferFlower extends DesireBase
 		this.m_toOfffer = EntityVillager.class;
 		this.m_type = 3;
 	}
+	
+	public DesireOfferFlower(RemoteEntity inEntity, EntityType inToOfferBukkitType)
+        {
+                this(inEntity, EntityTypeToLivingEntityClass.map(inToOfferBukkitType));
+        }
 	
 	public DesireOfferFlower(RemoteEntity inEntity, Class<? extends EntityLiving> inToOffer)
 	{

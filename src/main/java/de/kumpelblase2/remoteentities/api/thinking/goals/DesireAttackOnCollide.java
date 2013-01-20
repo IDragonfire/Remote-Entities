@@ -2,6 +2,7 @@
 package de.kumpelblase2.remoteentities.api.thinking.goals;
 
 import org.bukkit.craftbukkit.v1_4_R1.event.CraftEventFactory;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.entity.EntityTargetEvent;
 import net.minecraft.server.v1_4_R1.EntityLiving;
@@ -9,6 +10,7 @@ import net.minecraft.server.v1_4_R1.MathHelper;
 import net.minecraft.server.v1_4_R1.PathEntity;
 import de.kumpelblase2.remoteentities.api.RemoteEntity;
 import de.kumpelblase2.remoteentities.api.thinking.DesireBase;
+import de.kumpelblase2.remoteentities.utilities.EntityTypeToLivingEntityClass;
 
 public class DesireAttackOnCollide extends DesireBase
 {
@@ -19,6 +21,11 @@ public class DesireAttackOnCollide extends DesireBase
 	protected PathEntity m_path;
 	protected boolean m_ignoreSight;
 	protected float m_speed;
+	
+	public DesireAttackOnCollide(RemoteEntity inEntity, EntityType inToAttackBukkitType, boolean inIgnoreSight)
+        {
+                this(inEntity, EntityTypeToLivingEntityClass.map(inToAttackBukkitType), inIgnoreSight);
+        }
 	
 	public DesireAttackOnCollide(RemoteEntity inEntity, Class<? extends EntityLiving> inToAttack, boolean inIgnoreSight)
 	{

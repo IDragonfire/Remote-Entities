@@ -1,14 +1,21 @@
 package de.kumpelblase2.remoteentities.api.thinking.goals;
 
+import org.bukkit.entity.EntityType;
+
 import net.minecraft.server.v1_4_R1.EntityLiving;
 import net.minecraft.server.v1_4_R1.EntityTameableAnimal;
 import de.kumpelblase2.remoteentities.api.RemoteEntity;
 import de.kumpelblase2.remoteentities.api.features.TamingFeature;
 import de.kumpelblase2.remoteentities.exceptions.NotTameableException;
+import de.kumpelblase2.remoteentities.utilities.EntityTypeToLivingEntityClass;
 
 public class DesireNonTamedFindNearest extends DesireFindNearestTarget
 {
 	protected EntityLiving m_animal;
+	
+	public DesireNonTamedFindNearest(RemoteEntity inEntity, EntityType inTargetBukkitType, float inDistance, boolean inShouldCheckSight, boolean inShouldMeele, int inChance) throws Exception {
+	    this(inEntity, EntityTypeToLivingEntityClass.map(inTargetBukkitType), inDistance, inShouldCheckSight, inShouldMeele, inChance);
+	}
 
 	public DesireNonTamedFindNearest(RemoteEntity inEntity, Class<? extends EntityLiving> inTargetClass, float inDistance, boolean inShouldCheckSight, boolean inShouldMeele, int inChance) throws Exception
 	{

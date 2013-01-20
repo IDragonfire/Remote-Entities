@@ -1,7 +1,10 @@
 package de.kumpelblase2.remoteentities.api.thinking.goals;
 
+import org.bukkit.entity.EntityType;
+
 import de.kumpelblase2.remoteentities.api.RemoteEntity;
 import de.kumpelblase2.remoteentities.api.thinking.DesireBase;
+import de.kumpelblase2.remoteentities.utilities.EntityTypeToLivingEntityClass;
 import net.minecraft.server.v1_4_R1.*;
 
 public class DesireLookAtNearest extends DesireBase
@@ -12,6 +15,12 @@ public class DesireLookAtNearest extends DesireBase
 	protected float m_minDist;
 	protected float m_minDistSquared;
 	protected float m_lookPossibility;
+	
+	public DesireLookAtNearest(RemoteEntity inEntity, EntityType inTargetBukkitType, float inMinDistance)
+        {
+                this(inEntity, EntityTypeToLivingEntityClass.map(inTargetBukkitType), inMinDistance, 0.02F);
+        }
+	
 	
 	public DesireLookAtNearest(RemoteEntity inEntity, Class<? extends EntityLiving> inTarget, float inMinDistance)
 	{
