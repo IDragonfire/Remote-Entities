@@ -22,7 +22,7 @@ public class DesireAttackOnCollide extends DesireBase
 	protected boolean m_ignoreSight;
 	protected float m_speed;
 	
-	public DesireAttackOnCollide(RemoteEntity inEntity, EntityType inToAttackBukkitType, boolean inIgnoreSight)
+	public DesireAttackOnCollide(RemoteEntity inEntity, boolean inIgnoreSight, EntityType inToAttackBukkitType)
         {
                 this(inEntity, EntityTypeToLivingEntityClass.map(inToAttackBukkitType), inIgnoreSight);
         }
