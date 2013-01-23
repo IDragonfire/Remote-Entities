@@ -1,10 +1,8 @@
 package de.kumpelblase2.remoteentities.entities;
 
 import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.v1_4_R1.inventory.CraftInventoryPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
-
 import net.minecraft.server.v1_4_R1.*;
 import net.minecraft.server.v1_4_R1.Navigation;
 import de.kumpelblase2.remoteentities.api.*;
@@ -30,6 +28,7 @@ public class RemotePlayerEntity extends EntityPlayer implements RemoteEntityHand
 		this.noDamageTicks = 1;
 		this.W = 1;
 		this.getNavigation().e(true);
+		this.fauxSleeping = true;
 	}
 	
 	public RemotePlayerEntity(MinecraftServer minecraftserver, World world, String s, PlayerInteractManager iteminworldmanager, RemoteEntity inEntity)
@@ -128,6 +127,7 @@ public class RemotePlayerEntity extends EntityPlayer implements RemoteEntityHand
 	@Override
 	public void j_()
 	{
+		this.yaw = this.az;
 		super.j_();
 		super.g();
 
@@ -242,8 +242,9 @@ public class RemotePlayerEntity extends EntityPlayer implements RemoteEntityHand
 	}
 	
 	@Override
-	public boolean m(Entity entity) {
-	    attack(entity);
-	    return true;
+	public boolean m(Entity inEntity)
+	{
+		this.attack(inEntity);
+		return super.m(inEntity);
 	}
 }

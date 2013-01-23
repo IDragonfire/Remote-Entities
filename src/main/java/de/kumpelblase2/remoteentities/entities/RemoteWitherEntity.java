@@ -48,11 +48,11 @@ public class RemoteWitherEntity extends EntityWither implements RemoteEntityHand
 		{
 			Mind mind = this.getRemoteEntity().getMind();
 			mind.addMovementDesire(new DesireSwell(this.getRemoteEntity()), 0);
-			mind.addMovementDesire(new DesireRangedAttack(this.getRemoteEntity(), RemoteProjectileType.FIREBALL, 40), 2);
+			mind.addMovementDesire(new DesireRangedAttack(this.getRemoteEntity(), RemoteProjectileType.ENTITY_DEFAULT, 40), 2);
 			mind.addMovementDesire(new DesireWanderAround(this.getRemoteEntity()), 5);
 			mind.addMovementDesire(new DesireLookAtNearest(this.getRemoteEntity(), EntityHuman.class, 8F), 6);
 			mind.addMovementDesire(new DesireLookRandomly(this.getRemoteEntity()), 7);
-			mind.addActionDesire(new DesireFindTarget(this.getRemoteEntity(), 16, false, false), 1);
+			mind.addActionDesire(new DesireFindAttackingTarget(this.getRemoteEntity(), 16, false, false), 1);
 			mind.addActionDesire(new DesireFindNearestTarget(this.getRemoteEntity(), EntityLiving.class, 30F, false, 0), 2);
 		}
 		catch(Exception e)

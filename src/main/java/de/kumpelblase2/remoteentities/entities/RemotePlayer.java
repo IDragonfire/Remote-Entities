@@ -1,6 +1,8 @@
 package de.kumpelblase2.remoteentities.entities;
 
+import net.minecraft.server.v1_4_R1.EntityHuman;
 import net.minecraft.server.v1_4_R1.EntityLiving;
+import net.minecraft.server.v1_4_R1.EnumBedResult;
 import net.minecraft.server.v1_4_R1.PlayerInteractManager;
 import net.minecraft.server.v1_4_R1.WorldServer;
 import org.bukkit.Bukkit;
@@ -12,7 +14,7 @@ import de.kumpelblase2.remoteentities.EntityManager;
 import de.kumpelblase2.remoteentities.api.*;
 import de.kumpelblase2.remoteentities.api.events.RemoteEntitySpawnEvent;
 
-public class RemotePlayer extends RemoteBaseEntity implements RemoteEntity, Nameable, Fightable
+public class RemotePlayer extends RemoteBaseEntity implements Nameable, Fightable
 {
 	protected String m_name;
 	
@@ -98,5 +100,21 @@ public class RemotePlayer extends RemoteBaseEntity implements RemoteEntity, Name
 	public String getNativeEntityName()
 	{
 		return "Player";
+	}
+	
+	public boolean enterBed(Location inLocation)
+	{
+		this.teleport(inLocation);
+		return ((EntityHuman)this.getHandle()).a((int)inLocation.getX(), (int)inLocation.getY(), (int)inLocation.getZ()) == EnumBedResult.OK;
+	}
+	
+	public void leaveBed()
+	{
+		((EntityHuman)this.getHandle()).a(true, true, false);
+	}
+
+	public boolean isSleeping()
+	{
+		return ((EntityHuman)this.getHandle()).isSleeping();
 	}
 }

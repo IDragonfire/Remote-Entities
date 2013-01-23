@@ -63,10 +63,11 @@ public class DAttackDesireTest implements Listener {
 
                     @Override
                     public void run() {
-                        mind.addActionDesire(new DAttackEntity(attackEntity,
-                                Bukkit.getOnlinePlayers()[0]), 0);
-//                        mind.addActionDesire(new DesireFindTarget(attackEntity, 0, false, false), 1);
-                        mind.addActionDesire(new DesireAttackOnCollide(attackEntity, EntityLiving.class, true),2);
+                         mind.addActionDesire(new DAttackEntity(attackEntity,
+                         Bukkit.getOnlinePlayers()[0]), 0);
+                        // mind.addActionDesire(new DesireFindTarget(attackEntity, 0, false, false), 1);
+                        mind.addActionDesire(new DesireAttackOnCollide(
+                                attackEntity, EntityLiving.class, true), 2);
                         System.out.println("add mind");
                        
                     }

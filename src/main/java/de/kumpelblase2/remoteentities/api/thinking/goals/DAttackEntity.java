@@ -38,9 +38,10 @@ public class DAttackEntity extends DesireBase {
         System.out.println(target);
         // timeout for testing
         lastUpdate = System.currentTimeMillis() + 3000;
-
+        getEntityHandle().setGoalTarget(target);
+        System.out.println("test");
         // all possible attack methods
-         attacker.m(target);
+//         attacker.m(target);
         // attacker.a(target);
         // attacker.c(target);
         // attacker.d(target);
