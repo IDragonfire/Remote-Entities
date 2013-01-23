@@ -1,5 +1,9 @@
 package test;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+
 import net.minecraft.server.v1_4_R1.EntityHuman;
 import net.minecraft.server.v1_4_R1.EntityLiving;
 
@@ -15,6 +19,8 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 
+import com.thoughtworks.xstream.XStream;
+
 import de.kumpelblase2.remoteentities.*;
 import de.kumpelblase2.remoteentities.api.*;
 import de.kumpelblase2.remoteentities.api.thinking.*;
@@ -27,12 +33,39 @@ public class DAttackDesireTest implements Listener {
 
     public DAttackDesireTest(EntityManager em) {
         this.em = em;
+        final RemotePlayer remotePlayer = (RemotePlayer) em.createNamedEntity(
+                RemoteEntityType.Human, Bukkit.getWorlds().get(0).getBlockAt(
+                        10, 20, 30).getLocation(), "attack", false);
+        Player player = (Player) remotePlayer
+                .getBukkitEntity();
+        Enchantment myEnchantment = new EnchantmentWrapper(20);
+        ItemStack i = new ItemStack(Material.IRON_SWORD);
+        i.addEnchantment(myEnchantment, new Integer(2));
+        ((Player) player).setItemInHand(i);
+
+        final Mind mind = remotePlayer.getMind();
+        mind.addMovementDesire(new DesireWanderAround(remotePlayer), 6);
+        mind.addMovementDesire(new DesireLookAtNearest(remotePlayer,
+                EntityHuman.class, 8), 7);
+        
+        // serializing
+        try {
+            XStream xstream = new XStream();
+            FileOutputStream fs = new FileOutputStream(new File(
+                    "remotePlayer.xml"));
+
+            xstream.toXML(remotePlayer.prepareEntity(), fs);
+            fs.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         Location loc = event.getPlayer().getLocation();
-//        loc.setX(loc.getX() + 5);
+        // loc.setX(loc.getX() + 5);
 
         final RemotePlayer attackEntity = (RemotePlayer) em.createNamedEntity(
                 RemoteEntityType.Human, loc, "attack", false);
@@ -63,13 +96,13 @@ public class DAttackDesireTest implements Listener {
 
                     @Override
                     public void run() {
-                         mind.addActionDesire(new DAttackEntity(attackEntity,
-                         Bukkit.getOnlinePlayers()[0]), 0);
+                        mind.addActionDesire(new DAttackEntity(attackEntity,
+                                Bukkit.getOnlinePlayers()[0]), 0);
                         // mind.addActionDesire(new DesireFindTarget(attackEntity, 0, false, false), 1);
                         mind.addActionDesire(new DesireAttackOnCollide(
                                 attackEntity, EntityLiving.class, true), 2);
                         System.out.println("add mind");
-                       
+
                     }
                 }, 20 * 5);
 

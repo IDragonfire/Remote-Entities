@@ -10,6 +10,8 @@ import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_4_R1.CraftWorld;
 import org.bukkit.craftbukkit.v1_4_R1.entity.CraftLivingEntity;
 import org.bukkit.entity.LivingEntity;
+
+import test.EntityData;
 import de.kumpelblase2.remoteentities.EntityManager;
 import de.kumpelblase2.remoteentities.api.*;
 import de.kumpelblase2.remoteentities.api.events.RemoteEntitySpawnEvent;
@@ -30,6 +32,12 @@ public class RemotePlayer extends RemoteBaseEntity implements Nameable, Fightabl
 		this.m_entity = inEntity;
 	}
 
+	public EntityData prepareEntity() {
+	    EntityData data = super.prepareEntity();
+	    data.name = m_name;
+	    return data;
+	}
+	
 	@Override
 	public void attack(LivingEntity inTarget)
 	{

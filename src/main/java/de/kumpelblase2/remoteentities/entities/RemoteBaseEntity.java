@@ -10,6 +10,9 @@ import org.bukkit.craftbukkit.v1_4_R1.entity.CraftLivingEntity;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
+
+import test.EntityData;
+import test.RemoteLocation;
 import net.minecraft.server.v1_4_R1.EntityCreature;
 import net.minecraft.server.v1_4_R1.EntityLiving;
 import net.minecraft.server.v1_4_R1.MathHelper;
@@ -59,6 +62,11 @@ public abstract class RemoteBaseEntity implements RemoteEntity
 		this.m_manager = inManager;
 	}
 
+	public EntityData prepareEntity() {
+	    return new EntityData(m_id, m_type, "", RemoteLocation.encodeBukkitLocation(m_manager.getRemoteEntityByID(m_id).getBukkitEntity().getLocation()),
+	                          m_isStationary, m_isPushable, m_speed);
+	}
+	
 	@Override
 	public int getID()
 	{

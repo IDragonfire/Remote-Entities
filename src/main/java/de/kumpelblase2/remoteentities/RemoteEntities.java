@@ -11,6 +11,8 @@ import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import test.DAttackDesireTest;
+
 import de.kumpelblase2.remoteentities.api.DespawnReason;
 import de.kumpelblase2.remoteentities.api.RemoteEntity;
 import de.kumpelblase2.remoteentities.exceptions.PluginNotEnabledException;
@@ -23,12 +25,12 @@ public class RemoteEntities extends JavaPlugin {
     public void onEnable() {
         s_instance = this;
         Bukkit.getPluginManager().registerEvents(new DisableListener(), this);
-        // try {
-        // Bukkit.getPluginManager().registerEvents(new DAttackDesireTest(RemoteEntities.createManager(this)), this);
-        // } catch (PluginNotEnabledException e) {
-        // // TODO Auto-generated catch block
-        // e.printStackTrace();
-        // }
+         try {
+             Bukkit.getPluginManager().registerEvents(new DAttackDesireTest(RemoteEntities.createManager(this)), this);
+         } catch (PluginNotEnabledException e) {
+             // TODO Auto-generated catch block
+             e.printStackTrace();
+         }
     }
 
     @Override
