@@ -1,8 +1,8 @@
 package test;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 
 import net.minecraft.server.v1_4_R1.EntityHuman;
 import net.minecraft.server.v1_4_R1.EntityLiving;
@@ -10,6 +10,7 @@ import net.minecraft.server.v1_4_R1.EntityLiving;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.craftbukkit.libs.com.google.gson.Gson;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.enchantments.EnchantmentWrapper;
 import org.bukkit.entity.Player;
@@ -18,9 +19,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
-
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
 
 import de.kumpelblase2.remoteentities.*;
 import de.kumpelblase2.remoteentities.api.*;
@@ -37,8 +35,7 @@ public class DAttackDesireTest implements Listener {
         final RemotePlayer remotePlayer = (RemotePlayer) em.createNamedEntity(
                 RemoteEntityType.Human, Bukkit.getWorlds().get(0).getBlockAt(
                         10, 20, 30).getLocation(), "attack", false);
-        Player player = (Player) remotePlayer
-                .getBukkitEntity();
+        Player player = (Player) remotePlayer.getBukkitEntity();
         Enchantment myEnchantment = new EnchantmentWrapper(20);
         ItemStack i = new ItemStack(Material.IRON_SWORD);
         i.addEnchantment(myEnchantment, new Integer(2));
@@ -48,16 +45,15 @@ public class DAttackDesireTest implements Listener {
         mind.addMovementDesire(new DesireWanderAround(remotePlayer), 6);
         mind.addMovementDesire(new DesireLookAtNearest(remotePlayer,
                 EntityHuman.class, 8), 7);
-        
+
         // serializing
         try {
-            XStream xstream = new XStream(new JettisonMappedXmlDriver());
-            FileOutputStream fs = new FileOutputStream(new File(
+            Gson gson = new Gson();
+            BufferedWriter out = new BufferedWriter(new FileWriter(
                     "remotePlayer.json"));
-
-            xstream.toXML(remotePlayer.prepareEntity(), fs);
-            fs.close();
-        } catch (Exception e) {
+            out.write(gson.toJson(remotePlayer.prepareEntity()));
+            out.close();
+        } catch (IOException e) {
             e.printStackTrace();
         }
 

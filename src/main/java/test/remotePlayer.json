@@ -1,1 +1,1 @@
-{"test.EntityData":{"id":0,"type":"Human","name":"attack","location":{"x":10,"y":20,"z":20,"yaw":0,"pitch":0,"world":"world"},"isStationary":false,"isPushable":true,"speed":0.25}}
+{"id":0,"type":"Human","name":"attack","location":{"x":10.0,"y":20.0,"z":20.0,"yaw":0.0,"pitch":0.0,"world":"world"},"isStationary":false,"isPushable":true,"speed":0.25}
