@@ -20,6 +20,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 
 import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
 
 import de.kumpelblase2.remoteentities.*;
 import de.kumpelblase2.remoteentities.api.*;
@@ -50,9 +51,9 @@ public class DAttackDesireTest implements Listener {
         
         // serializing
         try {
-            XStream xstream = new XStream();
+            XStream xstream = new XStream(new JettisonMappedXmlDriver());
             FileOutputStream fs = new FileOutputStream(new File(
-                    "remotePlayer.xml"));
+                    "remotePlayer.json"));
 
             xstream.toXML(remotePlayer.prepareEntity(), fs);
             fs.close();
