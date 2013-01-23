@@ -1,6 +1,7 @@
 package de.kumpelblase2.remoteentities.entities;
 
 import org.bukkit.Bukkit;
+import org.bukkit.craftbukkit.v1_4_R1.inventory.CraftInventoryPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import net.minecraft.server.v1_4_R1.*;
