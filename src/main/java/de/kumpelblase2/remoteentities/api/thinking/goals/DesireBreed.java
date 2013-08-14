@@ -1,24 +1,33 @@
 package de.kumpelblase2.remoteentities.api.thinking.goals;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
+import net.minecraft.server.v1_6_R2.*;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
-import net.minecraft.server.v1_4_R1.EntityAgeable;
-import net.minecraft.server.v1_4_R1.EntityAnimal;
 import de.kumpelblase2.remoteentities.api.RemoteEntity;
 import de.kumpelblase2.remoteentities.api.thinking.DesireBase;
+import de.kumpelblase2.remoteentities.api.thinking.DesireType;
+import de.kumpelblase2.remoteentities.utilities.NMSUtil;
 
+/**
+ * Using this desire the animal entity will try to breed a child.
+ */
 public class DesireBreed extends DesireBase
 {
 	protected EntityAnimal m_mate;
 	protected int m_mateTicks = 0;
-	
+
+	@Deprecated
 	public DesireBreed(RemoteEntity inEntity)
 	{
 		super(inEntity);
-		this.m_type = 3;
+		this.m_type = DesireType.FULL_CONCENTRATION;
+	}
+
+	public DesireBreed()
+	{
+		super();
+		this.m_type = DesireType.FULL_CONCENTRATION;
 	}
 
 	@Override
@@ -27,14 +36,14 @@ public class DesireBreed extends DesireBase
 		this.m_mate = null;
 		this.m_mateTicks = 0;
 	}
-	
+
 	@Override
 	public boolean update()
 	{
-		this.getEntityHandle().getControllerLook().a(this.m_mate, 10, this.getEntityHandle().bp());
+		NMSUtil.getControllerLook(this.getEntityHandle()).a(this.m_mate, 10, NMSUtil.getMaxHeadRotation(this.getEntityHandle()));
 		this.getRemoteEntity().move((LivingEntity)this.m_mate.getBukkitEntity());
 		this.m_mateTicks++;
-		if(this.m_mateTicks == 60)
+		if(this.m_mateTicks >= 60 && this.getEntityHandle().e(this.m_mate) < 9D)
 			this.createChild();
 
 		return true;
@@ -45,9 +54,9 @@ public class DesireBreed extends DesireBase
 	{
 		if(!(this.getEntityHandle() instanceof EntityAnimal))
 			return false;
-		
+
 		EntityAnimal entity = (EntityAnimal)this.getEntityHandle();
-		if(!entity.r())
+		if(!entity.bY())
 			return false;
 		else
 		{
@@ -59,53 +68,58 @@ public class DesireBreed extends DesireBase
 	@Override
 	public boolean canContinue()
 	{
-		return this.m_mate.isAlive() && this.m_mate.r() && this.m_mateTicks < 60;
+		return this.m_mate.isAlive() && this.m_mate.bY() && this.m_mateTicks < 60;
 	}
-	
+
 	@SuppressWarnings("rawtypes")
 	protected EntityAnimal getNextAnimal()
 	{
 		double range = 8;
 		List entities = this.getEntityHandle().world.a(this.getEntityHandle().getClass(), this.getEntityHandle().boundingBox.grow(range, range, range));
 		Iterator it = entities.iterator();
-		
-		EntityAnimal nearest;
-		do
+		double nearestRange = Double.MAX_VALUE;
+		EntityAnimal nearest = null;
+		EntityAnimal entity = (EntityAnimal)this.getEntityHandle();
+		while(it.hasNext())
 		{
-			if(!it.hasNext())
-				return null;
-			
-			nearest = (EntityAnimal)it.next();
+			EntityAnimal mate = (EntityAnimal)it.next();
+			double currentRange;
+			if(entity.mate(mate) && (currentRange = entity.e(mate)) < nearestRange)
+			{
+				nearest = mate;
+				nearestRange = currentRange;
+			}
 		}
-		while(!((EntityAnimal)this.getEntityHandle()).mate(nearest));
 		return nearest;
 	}
-	
+
 	protected EntityAgeable createChild()
 	{
-		EntityAgeable baby = ((EntityAnimal)this.getEntityHandle()).createChild(this.m_mate);
-		
+		EntityAgeable baby = ((EntityAnimal)this.getEntityHandle()).createChild(this.m_mate); //TODO create feature/behavior
+
 		if(baby != null)
 		{
 			EntityAnimal entity = (EntityAnimal)this.getEntityHandle();
 			entity.setAge(6000);
 			this.m_mate.setAge(6000);
-			entity.s();
-			this.m_mate.s();
+			entity.bZ();
+			this.m_mate.bZ();
 			baby.setAge(-24000);
 			baby.setPositionRotation(entity.locX, entity.locY, entity.locZ, 0, 0);
 			entity.world.addEntity(baby, SpawnReason.BREEDING);
-			Random r = entity.aB();
+			Random r = entity.aC();
 			for(int i = 0; i < 7; ++i)
 			{
 				double d0 = r.nextGaussian() * 0.02D;
 				double d1 = r.nextGaussian() * 0.02D;
 				double d2 = r.nextGaussian() * 0.02D;
-				
+
 				entity.world.addParticle("heart", entity.locX + (r.nextFloat() * entity.width * 2) - entity.width, entity.locY + 0.5D + (r.nextFloat() * entity.length), entity.locZ + (r.nextFloat() * entity.width * 2) - entity.width, d0, d1, d2);
 			}
+
+			entity.world.addEntity(new EntityExperienceOrb(entity.world, entity.locX, entity.locY, entity.locZ, r.nextInt(7) + 1));
 		}
-		
+
 		return baby;
 	}
 }

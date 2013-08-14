@@ -1,27 +1,26 @@
 package de.kumpelblase2.remoteentities.entities;
 
-import org.bukkit.Bukkit;
+import net.minecraft.server.v1_6_R2.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
-import net.minecraft.server.v1_4_R1.*;
+import org.bukkit.util.Vector;
 import de.kumpelblase2.remoteentities.api.RemoteEntity;
 import de.kumpelblase2.remoteentities.api.RemoteEntityHandle;
-import de.kumpelblase2.remoteentities.api.events.RemoteEntityInteractEvent;
-import de.kumpelblase2.remoteentities.api.events.RemoteEntityTouchEvent;
 import de.kumpelblase2.remoteentities.api.features.InventoryFeature;
-import de.kumpelblase2.remoteentities.api.thinking.*;
+import de.kumpelblase2.remoteentities.api.thinking.DesireItem;
+import de.kumpelblase2.remoteentities.nms.PathfinderGoalSelectorHelper;
 
 public class RemoteEnderDragonEntity extends EntityEnderDragon implements RemoteEntityHandle
 {
-	private RemoteEntity m_remoteEntity;
+	private final RemoteEntity m_remoteEntity;
 	protected int m_lastBouncedId;
 	protected long m_lastBouncedTime;
-	
+
 	public RemoteEnderDragonEntity(World world)
 	{
 		this(world, null);
 	}
-	
+
 	public RemoteEnderDragonEntity(World world, RemoteEntity inRemoteEntity)
 	{
 		super(world);
@@ -29,14 +28,14 @@ public class RemoteEnderDragonEntity extends EntityEnderDragon implements Remote
 		new PathfinderGoalSelectorHelper(this.goalSelector).clearGoals();
 		new PathfinderGoalSelectorHelper(this.targetSelector).clearGoals();
 	}
-	
+
 	@Override
 	public Inventory getInventory()
 	{
 		if(!this.m_remoteEntity.getFeatures().hasFeature(InventoryFeature.class))
 			return null;
-		
-		return ((InventoryFeature)this.m_remoteEntity.getFeatures().getFeature(InventoryFeature.class)).getInventory();
+
+		return this.m_remoteEntity.getFeatures().getFeature(InventoryFeature.class).getInventory();
 	}
 
 	@Override
@@ -49,38 +48,22 @@ public class RemoteEnderDragonEntity extends EntityEnderDragon implements Remote
 	public void setupStandardGoals()
 	{
 	}
-	
+
 	@Override
-	public void g(double x, double y, double z)
-	{		
-		if(this.m_remoteEntity != null && this.m_remoteEntity.isPushable() && !this.m_remoteEntity.isStationary())
-			super.g(x, y, z);
-	}
-	
-	@Override
-	public void move(double d0, double d1, double d2)
+	public void l_()
 	{
-		if(this.m_remoteEntity != null && this.m_remoteEntity.isStationary())
-			return;
-		
-		super.move(d0, d1, d2);
-	}
-	
-	@Override
-	public void j_()
-	{
-		super.j_();
+		super.l_();
 		if(this.getRemoteEntity() != null)
 			this.getRemoteEntity().getMind().tick();
 	}
-	
+
 	@Override
 	public void c()
 	{
 		if(this.getRemoteEntity().isStationary())
 		{
 			// --- Taken from EntityEnderDragon.java#77 - #81
-			if(this.health <= 0)
+			if(this.getHealth() <= 0)
 			{
 				float f = (this.random.nextFloat() - 0.5F) * 8.0F;
 				float d05 = (this.random.nextFloat() - 0.5F) * 4.0F;
@@ -90,10 +73,10 @@ public class RemoteEnderDragonEntity extends EntityEnderDragon implements Remote
 			// ---
 			return;
 		}
-		
+
 		super.c();
 	}
-	
+
 	@Override
 	public void collide(Entity entity)
 	{
@@ -117,75 +100,79 @@ public class RemoteEnderDragonEntity extends EntityEnderDragon implements Remote
                 d1 *= d3;
                 d0 *= 0.05000000074505806D;
                 d1 *= 0.05000000074505806D;
-                d0 *= (double) (1.0F - this.Z);
-                d1 *= (double) (1.0F - this.Z);
+                d0 *= (double) (1.0F - this.aa);
+                d1 *= (double) (1.0F - this.aa);
                 this.g(-d0, 0.0D, -d1);
                 entity.g(d0, 0.0D, d1);
             }
         }
 		// ---
-	}
-	
-	@Override
-	public void c_(EntityHuman entity)
-	{
-		if(this.getRemoteEntity() == null || this.getRemoteEntity().getMind() == null)
-			return;
-		
-		if(entity instanceof EntityPlayer && this.getRemoteEntity().getMind().canFeel() && this.getRemoteEntity().getMind().hasBehaviour("Touch"))
+
+		if(this.getRemoteEntity() == null)
 		{
-			if (this.m_lastBouncedId != entity.id || System.currentTimeMillis() - this.m_lastBouncedTime > 1000)
-			{
-				if(entity.getBukkitEntity().getLocation().distanceSquared(getBukkitEntity().getLocation()) <= 1)
-				{
-					RemoteEntityTouchEvent event = new RemoteEntityTouchEvent(this.m_remoteEntity, entity.getBukkitEntity());
-					Bukkit.getPluginManager().callEvent(event);
-					if(event.isCancelled())
-						return;
-					
-					((TouchBehavior)this.getRemoteEntity().getMind().getBehaviour("Touch")).onTouch((Player)entity.getBukkitEntity());
-					this.m_lastBouncedTime = System.currentTimeMillis();
-					this.m_lastBouncedId = entity.id;
-				}
-			}
+			super.collide(entity);
+			return;
 		}
-		super.c_(entity);
+
+		if(((RemoteBaseEntity)this.m_remoteEntity).onCollide(entity.getBukkitEntity()))
+			super.collide(entity);
 	}
-	
+
+	@Override
+	public void g(double x, double y, double z)
+	{
+		if(this.m_remoteEntity == null)
+		{
+			super.g(x, y, z);
+			return;
+		}
+
+		Vector vector = ((RemoteBaseEntity)this.m_remoteEntity).onPush(x, y, z);
+		if(vector != null)
+			super.g(vector.getX(), vector.getY(), vector.getZ());
+	}
+
+	@Override
+	public void move(double d0, double d1, double d2)
+	{
+		if(this.m_remoteEntity != null && this.m_remoteEntity.isStationary())
+			return;
+
+		super.move(d0, d1, d2);
+	}
+
 	@Override
 	public boolean a(EntityHuman entity)
 	{
-		if(this.getRemoteEntity() == null || this.getRemoteEntity().getMind() == null)
+		if(this.getRemoteEntity() == null)
 			return super.a(entity);
-		
-		if(entity instanceof EntityPlayer && this.getRemoteEntity().getMind().canFeel())
-		{
-			RemoteEntityInteractEvent event = new RemoteEntityInteractEvent(this.m_remoteEntity, (Player)entity.getBukkitEntity());
-			Bukkit.getPluginManager().callEvent(event);
-			if(event.isCancelled())
-				return super.a(entity);
-			
-			if(this.getRemoteEntity().getMind().hasBehaviour("Interact"))
-				((InteractBehavior)this.getRemoteEntity().getMind().getBehaviour("Interact")).onInteract((Player)entity.getBukkitEntity());
-		}
-		
-		return super.a(entity);
+
+		if(!(entity.getBukkitEntity() instanceof Player))
+			return super.a(entity);
+
+		return ((RemoteBaseEntity)this.m_remoteEntity).onInteract((Player)entity.getBukkitEntity()) && super.a(entity);
 	}
-	
+
 	@Override
 	public void die(DamageSource damagesource)
 	{
-		if(this.getRemoteEntity() != null && this.getRemoteEntity().getMind() != null)
-		{
-			this.getRemoteEntity().getMind().clearMovementDesires();
-			this.getRemoteEntity().getMind().clearActionDesires();
-		}
+		((RemoteBaseEntity)this.m_remoteEntity).onDeath();
 		super.die(damagesource);
 	}
-	
+
 	@Override
 	public boolean be()
 	{
 		return true;
+	}
+
+	public static DesireItem[] getDefaultMovementDesires(RemoteEntity inEntityFor)
+	{
+		return new DesireItem[0];
+	}
+
+	public static DesireItem[] getDefaultTargetingDesires(RemoteEntity inEntityFor)
+	{
+		return new DesireItem[0];
 	}
 }

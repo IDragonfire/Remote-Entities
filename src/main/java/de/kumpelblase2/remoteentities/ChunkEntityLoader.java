@@ -1,77 +1,155 @@
 package de.kumpelblase2.remoteentities;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
-import org.bukkit.Chunk;
-import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_4_R1.CraftWorld;
+import java.util.*;
+import net.minecraft.server.v1_6_R2.WorldServer;
+import org.bukkit.*;
+import org.bukkit.craftbukkit.v1_6_R2.CraftWorld;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
+import org.bukkit.event.*;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
-import de.kumpelblase2.remoteentities.api.DespawnReason;
-import de.kumpelblase2.remoteentities.api.RemoteEntity;
+import de.kumpelblase2.remoteentities.api.*;
 
 class ChunkEntityLoader implements Listener
 {
-	private EntityManager m_manager;
-	private Map<RemoteEntity, Location> m_toSpawn;
-	
+	private final EntityManager m_manager;
+	private final Set<EntityLoadData> m_toSpawn;
+
 	ChunkEntityLoader(EntityManager inManager)
 	{
 		this.m_manager = inManager;
-		this.m_toSpawn = new HashMap<RemoteEntity, Location>();
+		this.m_toSpawn = new HashSet<EntityLoadData>();
 	}
-	
+
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onChunkLoad(ChunkLoadEvent event)
 	{
-		Chunk c = event.getChunk();
+		final Chunk c = event.getChunk();
 		for(RemoteEntity entity : this.m_manager.getAllEntities())
 		{
 			if(!entity.isSpawned())
 				continue;
-			
+
 			if(entity.getBukkitEntity().getLocation().getChunk() == c && entity.getHandle() != null)
-				((CraftWorld)c.getWorld()).getHandle().addEntity(entity.getHandle());				
-		}
-		
-		Iterator<Entry<RemoteEntity, Location>> it = this.m_toSpawn.entrySet().iterator();
-		while(it.hasNext())
-		{
-			Entry<RemoteEntity, Location> toSpawn = it.next();
-			Location loc = toSpawn.getValue();
-			if(loc.getChunk() == c)
 			{
-				toSpawn.getKey().spawn(loc);
-				it.remove();
+				WorldServer ws = ((CraftWorld)c.getWorld()).getHandle();
+				if(!ws.tracker.trackedEntities.b(entity.getHandle().id))
+					ws.addEntity(entity.getHandle());
 			}
 		}
+
+		Bukkit.getScheduler().runTask(RemoteEntities.getInstance(), new Runnable() {
+			public void run()
+			{
+				Iterator<EntityLoadData> it = m_toSpawn.iterator();
+				while(it.hasNext())
+				{
+					EntityLoadData toSpawn = it.next();
+					Location loc = toSpawn.loc;
+					if(loc.getChunk() == c)
+					{
+						spawn(toSpawn);
+						it.remove();
+					}
+				}
+			}
+		});
 	}
-	
+
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onChunkUnload(ChunkUnloadEvent event)
 	{
-		Chunk c = event.getChunk();
-		for(Entity entity : c.getEntities())
-		{
-			if(!(entity instanceof LivingEntity))
-				continue;
-			
-			if(RemoteEntities.isRemoteEntity((LivingEntity)entity))
+		final Chunk c = event.getChunk();
+		Bukkit.getScheduler().runTask(RemoteEntities.getInstance(), new Runnable() {
+			public void run()
 			{
-				RemoteEntity rentity = (RemoteEntity)RemoteEntities.getRemoteEntityFromEntity((LivingEntity)entity);
-				if(rentity.isSpawned())
+				for(Entity entity : c.getEntities())
 				{
-					this.m_toSpawn.put(rentity, rentity.getBukkitEntity().getLocation());
-					rentity.despawn(DespawnReason.CHUNK_UNLOAD);
+					if(!(entity instanceof LivingEntity))
+						continue;
+
+					if(RemoteEntities.isRemoteEntity((LivingEntity)entity))
+					{
+						RemoteEntity rentity = RemoteEntities.getRemoteEntityFromEntity((LivingEntity)entity);
+						if(rentity.isSpawned())
+						{
+							m_toSpawn.add(new EntityLoadData(rentity, entity.getLocation()));
+							rentity.despawn(DespawnReason.CHUNK_UNLOAD);
+						}
+					}
 				}
 			}
+		});
+	}
+
+	/**
+	 * Checks if an entity can be directly be spawned at given location.
+	 *
+	 * @param inLocation	Location to check for
+	 * @return				true if it can be spawned, false if not
+	 */
+	public boolean canSpawnAt(Location inLocation)
+	{
+		return inLocation.getChunk().isLoaded();
+	}
+
+	/**
+	 * Queues an entity to spawn whenever the chunk is loaded.
+	 *
+	 * @param inEntity		Entity to spawn
+	 * @param inLocation	Location to spawn at
+	 * @return				true if it gets queued, false if it could be spawned directly
+	 */
+	public boolean queueSpawn(RemoteEntity inEntity, Location inLocation)
+	{
+		return this.queueSpawn(inEntity, inLocation, false);
+	}
+
+	/**
+	 * Queues an entity to spawn whenever the chunk is loaded.
+	 *
+	 * @param inEntity		Entity to spawn
+	 * @param inLocation	Location to spawn at
+	 * @param inSetupGoals	Whether standard goals should be applied or not
+	 * @return				true if it gets queued, false if it could be spawned directly
+	 */
+	public boolean queueSpawn(RemoteEntity inEntity, Location inLocation, boolean inSetupGoals)
+	{
+		EntityLoadData spawnData = new EntityLoadData(inEntity, inLocation, inSetupGoals);
+		if(this.canSpawnAt(inLocation))
+		{
+			this.spawn(spawnData);
+			return false;
+		}
+
+		this.m_toSpawn.add(spawnData);
+		return true;
+	}
+
+	protected void spawn(EntityLoadData inData)
+	{
+		inData.entity.spawn(inData.loc);
+		if(inData.entity.isSpawned() && inData.setupGoals)
+			((RemoteEntityHandle)inData.entity.getHandle()).setupStandardGoals();
+	}
+
+	class EntityLoadData
+	{
+		final RemoteEntity entity;
+		final Location loc;
+		final boolean setupGoals;
+
+		public EntityLoadData(RemoteEntity inEntity, Location inLoc, boolean inSetupGoals)
+		{
+			this.entity = inEntity;
+			this.loc = inLoc;
+			this.setupGoals = inSetupGoals;
+		}
+
+		public EntityLoadData(RemoteEntity inEntity, Location inLoc)
+		{
+			this(inEntity, inLoc, false);
 		}
 	}
 }
