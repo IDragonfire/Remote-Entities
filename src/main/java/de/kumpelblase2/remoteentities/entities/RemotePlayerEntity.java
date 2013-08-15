@@ -1,9 +1,11 @@
 package de.kumpelblase2.remoteentities.entities;
 
 import net.minecraft.server.v1_6_R2.*;
+
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.util.Vector;
+
 import de.kumpelblase2.remoteentities.api.RemoteEntity;
 import de.kumpelblase2.remoteentities.api.RemoteEntityHandle;
 import de.kumpelblase2.remoteentities.api.thinking.DesireItem;
@@ -45,6 +47,8 @@ public class RemotePlayerEntity extends EntityPlayer implements RemoteEntityHand
 		this.m_controllerJump = new PlayerControllerJump(this);
 		this.m_controllerMove = new PlayerControllerMove(this);
 		this.m_controllerLook = new PlayerControllerLook(this);
+		
+		this.aW().b(GenericAttributes.b).setValue(8.0F);
 	}
 
 	public RemotePlayerEntity(MinecraftServer minecraftserver, World world, String s, PlayerInteractManager iteminworldmanager, RemoteEntity inEntity)

@@ -80,7 +80,7 @@ public class RemoteEntities extends JavaPlugin {
                 // }
                 // });
                 entity.getMind().addTargetingDesire(new DesireWanderAround(), 1);
-//                entity.setPathfindingRange(5.0);
+                entity.setPathfindingRange(5.0);
 
                 // add behaviors
                 // entity.getMind().addBehaviour(new ConversationBehavior(entity));

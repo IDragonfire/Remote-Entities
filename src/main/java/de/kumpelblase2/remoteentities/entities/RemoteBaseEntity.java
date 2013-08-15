@@ -402,17 +402,12 @@ public abstract class RemoteBaseEntity<T extends LivingEntity> implements Remote
 	@Override
 	public void setPathfindingRange(double inRange)
 	{
-	    if(this.m_entity.getAttributeInstance(GenericAttributes.b) != null) {
-		this.m_entity.getAttributeInstance(GenericAttributes.b).setValue(inRange);
-	    }
+	    this.m_entity.getAttributeInstance(GenericAttributes.b).setValue(inRange);
 	}
 
 	@Override
 	public double getPathfindingRange()
 	{
-	    if(this.m_entity.getAttributeInstance(GenericAttributes.b) == null) {
-	        return 0.0d;
-	    }
 	    return this.m_entity.getAttributeInstance(GenericAttributes.b).getValue();
 	}
 
