@@ -33,10 +33,12 @@ public class DesireWanderAround extends DesireBase
 	@Override
 	public boolean shouldExecute()
 	{
+
 		if(this.getEntityHandle() == null)
 			return false;
 
-		if(this.getEntityHandle().aE() >= 100)
+		// get Age
+		if(this.getEntityHandle().aH() >= 100)
 			return false;
 		else if(this.getEntityHandle().aC().nextInt(120) != 0)
 			return false;

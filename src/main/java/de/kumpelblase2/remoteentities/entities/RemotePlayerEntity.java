@@ -71,6 +71,10 @@ public class RemotePlayerEntity extends EntityPlayer implements RemoteEntityHand
 		this.yaw = this.az;
 		super.l_();
 		this.h();
+		
+		this.m_controllerLook.a();
+		this.m_controllerMove.c();
+		this.m_controllerJump.b();
 
 		if(this.noDamageTicks > 0)
 			this.noDamageTicks--;
@@ -82,7 +86,7 @@ public class RemotePlayerEntity extends EntityPlayer implements RemoteEntityHand
 		Navigation navigation = this.getNavigation();
         if(!navigation.g())
         {
-            navigation.h();
+            navigation.f();
             this.applyMovement();
         }
         //End Citizens
@@ -134,12 +138,14 @@ public class RemotePlayerEntity extends EntityPlayer implements RemoteEntityHand
 		this.getRemoteEntity().getMind().addMovementDesires(getDefaultMovementDesires());
 	}
 
+	// isAIEnabled 
 	@Override
 	public boolean be()
 	{
 		return true;
 	}
 
+	// addVelocity 
 	@Override
 	public void g(double x, double y, double z)
 	{

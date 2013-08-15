@@ -55,23 +55,23 @@ public class RemoteEntities extends JavaPlugin {
 
                 Player player = Bukkit.getPlayer("IDragonfire");
                 Location loc = player.getLocation().add(1, 0, 1);
-                createNPC(entityManager, npcName, loc);
-                
-                // // loc.getBlock().setType(Material.GLASS);
-                // // player.sendBlockChange(loc, Material.GLASS.getId(), (byte)0);
-                // if (loc == null) {
-                // System.out.println("test");
-                // }
-                // // spawn entity
-                //
-                // RemoteEntity entity = entityManager.createNamedEntity(
-                // RemoteEntityType.Human, loc, npcName, true);
-                //
-                // entity.setStationary(true);
-                // entity.setPushable(false);
-                // // add desires
-                // entity.getMind().addMovementDesire(
-                // new DesireLookAtNearest(Player.class, 8F), 10);
+//                createNPC(entityManager, npcName, loc);
+
+                // loc.getBlock().setType(Material.GLASS);
+                // player.sendBlockChange(loc, Material.GLASS.getId(), (byte)0);
+                if (loc == null) {
+                    System.out.println("test");
+                }
+                // spawn entity
+
+                RemoteEntity entity = entityManager.createNamedEntity(
+                        RemoteEntityType.Human, loc, npcName, true);
+
+                entity.setStationary(false);
+                entity.setPushable(true);
+                // add desires
+                entity.getMind().addMovementDesire(
+                        new DesireLookAtNearest(Player.class, 8F), 10);
                 // entity.getMind().addBehaviour(new InteractBehavior(entity) {
                 // @Override
                 // public void onInteract(Player inPlayer) {
@@ -79,7 +79,8 @@ public class RemoteEntities extends JavaPlugin {
                 // inPlayer.sendMessage("test");
                 // }
                 // });
-                // entity.setPathfindingRange(10.0);
+                entity.getMind().addTargetingDesire(new DesireWanderAround(), 1);
+//                entity.setPathfindingRange(5.0);
 
                 // add behaviors
                 // entity.getMind().addBehaviour(new ConversationBehavior(entity));
@@ -99,17 +100,18 @@ public class RemoteEntities extends JavaPlugin {
                 // }
                 // }
 
-                // entity.save();
+                entity.save();
             }
         }, this);
     }
 
-    public static void createNPC(EntityManager manager, String name, Location loc) {
+    public static void createNPC(EntityManager manager, String name,
+            Location loc) {
         CreateEntityContext cec = manager.prepareEntity(RemoteEntityType.Human)
                 .asPushable(true).withName("Herobrine").asStationary(false)
                 .atLocation(loc.add(0, 2, 0));
         RemoteEntity re = cec.create();
-        re.getMind().addTargetingDesire(new DesireWanderAround(), 100);
+        re.getMind().addTargetingDesire(new DesireWanderAround(), 1000);
     }
 
     @Override
